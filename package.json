@@ -2,7 +2,7 @@
   "name": "render-svgs-with-puppeteer",
   "version": "0.0.1",
   "description": "Quick and dirty SVG renderer using modern (2021) puppeteer and other dependencies",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "jest",
     "dev": "tsc --pretty --watch",
