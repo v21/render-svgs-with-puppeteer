@@ -1,8 +1,17 @@
 import puppeteer from 'puppeteer';
 
-export async function convert(input: string): Promise<Buffer> {
+export async function createPuppet() {
+    return await puppeteer.launch();
+}
 
-    const browser = await puppeteer.launch();
+
+export async function destroyPuppet(puppet: puppeteer.Browser) {
+    await puppet.close();
+}
+
+export async function convert(input: string, puppet?: puppeteer.Browser): Promise<Buffer> {
+
+    const browser = puppet || await puppeteer.launch();
     const page = await browser.newPage();
 
     const start = input.indexOf('<svg');
@@ -35,7 +44,9 @@ export async function convert(input: string): Promise<Buffer> {
         clip: Object.assign({ x: 0, y: 0 }, dimensions)
     })) as Buffer;
 
-    await browser.close();
+    if (!puppet) {
+        await browser.close();
+    }
 
     return output;
 }
