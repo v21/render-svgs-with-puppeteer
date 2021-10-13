@@ -1,5 +1,6 @@
 import { convert } from './index';
 import * as fs from 'fs';
+import md5 from 'md5';
 
 jest.setTimeout(10000)
 test('returns buffer', async () => {
@@ -18,5 +19,6 @@ test('returns buffer', async () => {
 
     let buffer = await convert(svg);
     expect(buffer).toBeInstanceOf(Buffer);
-    fs.writeFileSync('test.png', buffer);
+    expect(md5(buffer)).toBe('686973d72c9da41a69c22b2a28ecaf68');
+    // fs.writeFileSync('test.png', buffer);
 });
