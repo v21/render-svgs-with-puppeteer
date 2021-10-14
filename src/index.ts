@@ -1,4 +1,4 @@
-import puppeteer from 'puppeteer';
+import puppeteer, { Browser } from 'puppeteer';
 
 export async function createPuppet() {
     return await puppeteer.launch();
@@ -10,45 +10,58 @@ export async function destroyPuppet(puppet: puppeteer.Browser) {
 }
 
 export async function convert(input: string, puppet?: puppeteer.Browser): Promise<Buffer> {
+    let browser = null;
+    try {
+        browser = puppet || await puppeteer.launch();
+        const page = await browser.newPage();
 
-    const browser = puppet || await puppeteer.launch();
-    const page = await browser.newPage();
+        const start = input.indexOf('<svg');
 
-    const start = input.indexOf('<svg');
-
-    let html = `<!DOCTYPE html>
+        let html = `<!DOCTYPE html>
 <style>
 * { margin: 0; padding: 0; }
 </style>`;
-    if (start >= 0) {
-        html += input.substring(start);
-    } else {
-        throw new Error('SVG element open tag not found in input. Check the SVG input');
+        if (start >= 0) {
+            html += input.substring(start);
+        } else {
+            throw new Error('SVG element open tag not found in input. Check the SVG input');
+        }
+
+        page.setContent(html);
+
+        const dimensions = await getDimensions(page);
+        if (!dimensions) {
+            throw new Error('Unable to derive width and height from SVG.');
+        }
+
+        await page.setViewport({
+            height: Math.round(dimensions.height),
+            width: Math.round(dimensions.width)
+        });
+
+
+        const output = await page.screenshot(Object.assign({
+            type: 'png',
+            clip: Object.assign({ x: 0, y: 0 }, dimensions)
+        })) as Buffer;
+
+
+
+        if (!puppet) {
+            await browser.close();
+            browser = null;
+        }
+
+        return output;
     }
-
-    page.setContent(html);
-
-    const dimensions = await getDimensions(page);
-    if (!dimensions) {
-        throw new Error('Unable to derive width and height from SVG.');
+    catch (e) {
+        throw (e);
     }
-
-    await page.setViewport({
-        height: Math.round(dimensions.height),
-        width: Math.round(dimensions.width)
-    });
-
-
-    const output = await page.screenshot(Object.assign({
-        type: 'png',
-        clip: Object.assign({ x: 0, y: 0 }, dimensions)
-    })) as Buffer;
-
-    if (!puppet) {
-        await browser.close();
+    finally {
+        if (!puppet && browser) {
+            await browser.close();
+        }
     }
-
-    return output;
 }
 
 
