@@ -8,6 +8,7 @@ export async function createPuppet() {
 export async function destroyPuppet(puppet: puppeteer.Browser) {
     await puppet.close();
 }
+const pause = (timeoutMsec: number) => new Promise(resolve => setTimeout(resolve, timeoutMsec))
 
 export async function convert(input: string, puppet?: puppeteer.Browser): Promise<Buffer> {
     let browser = null;
@@ -27,7 +28,8 @@ export async function convert(input: string, puppet?: puppeteer.Browser): Promis
             throw new Error('SVG element open tag not found in input. Check the SVG input');
         }
 
-        page.setContent(html);
+        page.setContent(html, { waitUntil: ['networkidle0', 'load'], timeout: 5000 });
+        await pause(1000); //wish this wasn't here, but it seems necessary in order to render images contained within SVGs
 
         const dimensions = await getDimensions(page);
         if (!dimensions) {
