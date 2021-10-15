@@ -20,7 +20,7 @@ test('simple render', async () => {
     let buffer = await convert(svg);
     expect(buffer).toBeInstanceOf(Buffer);
     expect(md5(buffer)).toBe('686973d72c9da41a69c22b2a28ecaf68');
-    // fs.writeFileSync('test.png', buffer);
+    fs.writeFileSync('test_output/test.png', buffer);
 });
 
 test('reuse same instance', async () => {
@@ -56,5 +56,25 @@ xmlns="http://www.w3.org/2000/svg">
     expect(md5(buffer)).toBe('686973d72c9da41a69c22b2a28ecaf68');
     expect(buffer2).toBeInstanceOf(Buffer);
     expect(md5(buffer2)).toBe('ade35cd9eda48df2f4236bba4e281f97');
+    fs.writeFileSync('test_output/test2.png', buffer2);
+});
+
+
+
+
+test('load external image', async () => {
+
+    const svg = `<svg width="500" height="250">    <defs>        <clipPath id="circleView">            <circle cx="250" cy="125" r="125" fill="#FFFFFF"></circle>        </clipPath>    </defs>    <image width="500" height="250" href="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Variegated_golden_frog_%28Mantella_baroni%29_Ranomafana.jpg/1024px-Variegated_golden_frog_%28Mantella_baroni%29_Ranomafana.jpg" clip-path="url(circleView)"></image> </svg>`;
+
+    let puppet = await createPuppet();
+    let buffer = await convert(svg, puppet);
+    await destroyPuppet(puppet);
+    expect(buffer).toBeInstanceOf(Buffer);
+    fs.writeFileSync('test_output/test_frog.png', buffer);
+    expect(md5(buffer)).toBe('9181038c72dc265fbbaca59558ca217e');
+});
+
+
+
     fs.writeFileSync('test2.png', buffer2);
 });

@@ -29,7 +29,7 @@ export async function convert(input: string, puppet?: puppeteer.Browser): Promis
         }
 
         page.setContent(html, { waitUntil: ['networkidle0', 'load'], timeout: 5000 });
-        await pause(1000); //wish this wasn't here, but it seems necessary in order to render images contained within SVGs
+        await pause(3000); //wish this wasn't here, but it seems necessary in order to wait for the paint to complete when loading images into SVGs
 
         const dimensions = await getDimensions(page);
         if (!dimensions) {
