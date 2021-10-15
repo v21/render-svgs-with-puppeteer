@@ -1,5 +1,7 @@
 import puppeteer, { Browser } from 'puppeteer';
 
+export type { Browser };
+
 export async function createPuppet() {
     return await puppeteer.launch();
 }
