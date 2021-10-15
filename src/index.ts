@@ -42,12 +42,11 @@ export async function convert(input: string, puppet?: puppeteer.Browser): Promis
         });
 
 
-        const output = await page.screenshot(Object.assign({
+        const output = await page.screenshot({
             type: 'png',
-            clip: Object.assign({ x: 0, y: 0 }, dimensions)
-        })) as Buffer;
-
-
+            clip: Object.assign({ x: 0, y: 0 }, dimensions),
+            omitBackground: true
+        }) as Buffer;
 
         if (!puppet) {
             await browser.close();
