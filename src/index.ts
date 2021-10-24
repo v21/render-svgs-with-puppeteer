@@ -50,6 +50,8 @@ export async function convert(input: string, puppet?: puppeteer.Browser): Promis
             omitBackground: true
         }) as Buffer;
 
+        await page.close();
+
         if (!puppet) {
             await browser.close();
             browser = null;
