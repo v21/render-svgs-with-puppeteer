@@ -30,8 +30,8 @@ export async function convert(input: string, puppet?: puppeteer.Browser): Promis
             throw new Error('SVG element open tag not found in input. Check the SVG input');
         }
 
-        page.setContent(html, { waitUntil: ['networkidle0', 'load'], timeout: 5000 });
-        await pause(3000); //wish this wasn't here, but it seems necessary in order to wait for the paint to complete when loading images into SVGs
+        await page.setContent(html, { waitUntil: ['networkidle0', 'load'], timeout: 5000 });
+        //await pause(3000); //wish this wasn't here, but it seems necessary in order to wait for the paint to complete when loading images into SVGs
 
         const dimensions = await getDimensions(page);
         if (!dimensions) {
